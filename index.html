@@ -1,0 +1,212 @@
+<!doctype html>
+<html lang="bn">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Dream Blog — Home</title>
+  <style>
+    :root{--bg:#0f1724;--card:#0b1220;--accent:#7c3aed;--muted:#94a3b8;--glass: rgba(255,255,255,0.03)}
+    *{box-sizing:border-box}body{margin:0;font-family:Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;background:linear-gradient(180deg,#071022 0%, #071832 60%);color:#e6eef8;min-height:100vh}
+    header{backdrop-filter:blur(6px);background:linear-gradient(90deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));padding:18px 24px;position:sticky;top:0;z-index:50;border-bottom:1px solid rgba(255,255,255,0.03);display:flex;align-items:center;gap:18px}
+    .brand{display:flex;align-items:center;gap:12px;font-weight:700}
+    .logo{width:44px;height:44px;border-radius:10px;background:linear-gradient(135deg,var(--accent),#06b6d4);display:flex;align-items:center;justify-content:center;color:white;font-weight:800;letter-spacing:0.6px}
+    .hero{padding:44px 24px;display:grid;grid-template-columns:1fr;gap:20px;align-items:center}
+    .hero .intro{max-width:780px}
+    h1{font-size: clamp(22px, 4vw, 40px);margin:0 0 8px}
+    p.lead{color:var(--muted);margin:0 0 16px}
+    .controls{display:flex;gap:12px;flex-wrap:wrap}
+    .btn{background:linear-gradient(90deg,var(--accent),#22c1c3);border:none;padding:10px 14px;border-radius:10px;color:#02111a;font-weight:700;cursor:pointer;box-shadow:0 6px 18px rgba(124,58,237,0.12);transition:transform .18s ease}
+    .btn:active{transform:translateY(2px)}
+    main{padding:18px 24px 64px}
+    .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:18px}
+    .card{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.02));border-radius:14px;padding:14px;overflow:hidden;position:relative;border:1px solid rgba(255,255,255,0.03);transform:translateY(20px);opacity:0;transition:all .5s cubic-bezier(.2,.9,.3,1)}
+    .card.show{transform:none;opacity:1}
+    .thumb{width:100%;height:160px;object-fit:cover;border-radius:10px}
+    .meta{display:flex;justify-content:space-between;align-items:center;margin-top:10px}
+    .title{font-size:18px;margin:6px 0;font-weight:700}
+    .excerpt{color:var(--muted);font-size:14px}
+    footer{padding:22px 24px;color:var(--muted);text-align:center}
+
+    /* modal */
+    .modal-bg{position:fixed;inset:0;background:linear-gradient(0deg, rgba(0,0,0,0.6), rgba(0,0,0,0.6));display:none;align-items:center;justify-content:center;padding:18px;z-index:120}
+    .modal-bg.open{display:flex}
+    .modal{background:var(--card);border-radius:12px;padding:18px;max-width:900px;width:100%;max-height:90vh;overflow:auto;border:1px solid rgba(255,255,255,0.04)}
+    .modal img{max-width:100%;border-radius:8px;margin-bottom:12px}
+
+    /* form */
+    form .row{display:flex;gap:10px}
+    input,textarea{width:100%;padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:inherit}
+    textarea{min-height:120px;resize:vertical}
+    .small{font-size:13px;color:var(--muted)}
+    .actions{display:flex;gap:8px;justify-content:flex-end;margin-top:10px}
+
+    /* subtle animation */
+    .float{animation:floatY 6s ease-in-out infinite}
+    @keyframes floatY{0%{transform:translateY(0)}50%{transform:translateY(-8px)}100%{transform:translateY(0)}}
+
+    /* responsive */
+    @media(min-width:900px){.hero{grid-template-columns:1fr 360px}.hero .card-cta{background:var(--glass);padding:18px;border-radius:12px}}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="logo">DG</div>
+    <div class="brand">Dream Blog</div>
+    <div style="flex:1"></div>
+    <button class="btn" id="addBtn">Add Article</button>
+    <button class="btn" id="exportBtn" title="Export articles (backup)">Export</button>
+    <input id="importFile" type="file" accept="application/json" style="display:none">
+  </header>
+
+  <section class="hero">
+    <div class="intro">
+      <h1>স্বাগতম — তোমার ব্লগের নতুন হোমপেজ</h1>
+      <p class="lead">এই পেইজে তুমি সরাসরি ব্রাউজারে ছবিসহ আর্টিকেল যোগ করতে পারবে। কোন সার্ভার লাগবে না — সব কিছুকিছু লোকালস্টোরেজে রাখা হবে।</p>
+      <div class="controls">
+        <button class="btn" id="addBtn2">নতুন আর্টিকেল যোগ করো</button>
+        <button class="btn" id="importBtn">Import</button>
+      </div>
+    </div>
+    <div class="card-cta float" style="border-radius:14px">
+      <div style="font-weight:700;font-size:18px;margin-bottom:8px">কীভাবে কাজ করে</div>
+      <div class="small">Add Article বাটনে ক্লিক করে টাইটেল, সংক্ষিপ্ত বর্ণনা ও পুরো লেখা এবং ছবি আপলোড করো। পোস্টগুলো স্বয়ংক্রিয়ভাবে হোমপেজে দেখাবে।</div>
+    </div>
+  </section>
+
+  <main>
+    <div class="grid" id="posts"></div>
+  </main>
+
+  <footer>Made with ♥ by Dream Blog template — ছবি ও কনটেন্ট লোকাল ব্রাউজারে সংরক্ষিত থাকবে।</footer>
+
+  <!-- Modal for Add / View -->
+  <div class="modal-bg" id="modalBg">
+    <div class="modal" id="modal">
+      <!-- dynamic content -->
+    </div>
+  </div>
+
+  <script>
+    // Simple client-side blog using localStorage. No server required.
+    const STORAGE_KEY = 'dream_blog_posts_v1';
+    const postsEl = document.getElementById('posts');
+    const modalBg = document.getElementById('modalBg');
+    const modal = document.getElementById('modal');
+
+    function readPosts(){
+      try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]') }
+      catch(e){ return [] }
+    }
+    function writePosts(arr){ localStorage.setItem(STORAGE_KEY, JSON.stringify(arr)) }
+
+    function render(){
+      const posts = readPosts().slice().reverse();
+      postsEl.innerHTML = '';
+      if(!posts.length){ postsEl.innerHTML = '<div style="opacity:.7">কোনো আর্টিকেল নেই — Add Article বাটনে নতুন আর্টিকেল যোগ করো।</div>'; return }
+      posts.forEach((p,i)=>{
+        const card = document.createElement('article'); card.className='card';
+        card.innerHTML = `
+          ${p.image?`<img class="thumb" src="${p.image}" alt="thumb">`:''}
+          <div class="meta"><div class="small">${p.date}</div><div class="small">${p.author||'Admin'}</div></div>
+          <div class="title">${escapeHtml(p.title)}</div>
+          <div class="excerpt">${escapeHtml(p.excerpt)}</div>
+        `;
+        card.onclick = ()=> openPost(p);
+        postsEl.appendChild(card);
+        setTimeout(()=>card.classList.add('show'), 80*i);
+      })
+    }
+
+    function escapeHtml(s){ return (s||'').replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":"&#39;"})[c]) }
+
+    function openPost(p){
+      modal.innerHTML = `
+        <button style="float:right" onclick="closeModal()" class="btn">Close</button>
+        <h2 style="margin-top:6px">${escapeHtml(p.title)}</h2>
+        <div class="small">${p.date} · ${p.author||'Admin'}</div>
+        ${p.image?`<img src="${p.image}" alt="img">`:''}
+        <div style="margin-top:12px;white-space:pre-wrap;color:var(--muted)">${escapeHtml(p.content)}</div>
+      `;
+      modalBg.classList.add('open');
+    }
+    function closeModal(){ modalBg.classList.remove('open'); }
+
+    // Show Add Article form
+    function showAddForm(){
+      modal.innerHTML = `
+        <h3>নতুন আর্টিকেল যোগ করো</h3>
+        <form id="postForm">
+          <div style="margin-top:8px"><input name="title" placeholder="Title" required></div>
+          <div style="margin-top:8px"><input name="author" placeholder="Author (optional)"></div>
+          <div style="margin-top:8px"><input name="excerpt" placeholder="Short excerpt"></div>
+          <div style="margin-top:8px"><textarea name="content" placeholder="Full content" required></textarea></div>
+          <div style="margin-top:8px">
+            <label class="small">Cover image (jpg/png)</label>
+            <input type="file" name="image" accept="image/*">
+            <div id="imgPreview" style="margin-top:8px"></div>
+          </div>
+          <div class="actions">
+            <button type="button" class="btn" onclick="closeModal()">Cancel</button>
+            <button type="submit" class="btn">Save Article</button>
+          </div>
+        </form>
+      `;
+      modalBg.classList.add('open');
+
+      const form = document.getElementById('postForm');
+      const imgInput = form.querySelector('input[type=file]');
+      const imgPreview = document.getElementById('imgPreview');
+
+      imgInput.addEventListener('change', async(e)=>{
+        const f = e.target.files[0];
+        if(!f) return imgPreview.innerHTML='';
+        if(f.size > 2_700_000){ imgPreview.innerHTML = '<div class="small">ফাইল বড় — 2.7MB এর কম করুন</div>'; return }
+        const data = await fileToDataUrl(f);
+        imgPreview.innerHTML = `<img src="${data}" style="max-width:200px;border-radius:8px">`;
+        imgInput.dataset.data = data;
+      });
+
+      form.addEventListener('submit', (ev)=>{
+        ev.preventDefault();
+        const fd = new FormData(form);
+        const title = fd.get('title').trim();
+        const author = fd.get('author').trim();
+        const excerpt = fd.get('excerpt').trim();
+        const content = fd.get('content').trim();
+        const image = imgInput.dataset.data || '';
+        const posts = readPosts();
+        posts.push({id:Date.now(),title,author,excerpt,content,image,date:new Date().toLocaleString('bn-BD')});
+        writePosts(posts);
+        closeModal(); render();
+      });
+    }
+
+    function fileToDataUrl(file){ return new Promise((res,rej)=>{ const r=new FileReader(); r.onload=()=>res(r.result); r.onerror=rej; r.readAsDataURL(file); }) }
+
+    // Export / Import
+    document.getElementById('exportBtn').addEventListener('click', ()=>{
+      const data = localStorage.getItem(STORAGE_KEY) || '[]';
+      const blob = new Blob([data],{type:'application/json'});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a'); a.href = url; a.download = 'dream_blog_backup.json'; a.click(); URL.revokeObjectURL(url);
+    });
+    document.getElementById('importBtn').addEventListener('click', ()=> document.getElementById('importFile').click());
+    document.getElementById('importFile').addEventListener('change', async(e)=>{
+      const f = e.target.files[0]; if(!f) return; const txt = await f.text(); try{ JSON.parse(txt); localStorage.setItem(STORAGE_KEY, txt); render(); alert('Imported ✔️'); }catch(err){ alert('Invalid JSON'); }
+    });
+
+    // attach add buttons
+    document.getElementById('addBtn').addEventListener('click', showAddForm);
+    document.getElementById('addBtn2').addEventListener('click', showAddForm);
+
+    // close modal on bg click
+    modalBg.addEventListener('click', (e)=>{ if(e.target===modalBg) closeModal(); });
+
+    // initial render
+    render();
+
+    // small helpful note in console for uploader
+    console.log('Dream Blog — open Add Article to create posts. Posts are stored in browser localStorage.');
+  </script>
+</body>
+</html>
